@@ -27,7 +27,7 @@ optional arguments:
 
 === Supported encoding types ===
 
-        1. base64|b64   base64 encodes all characters.
+        1. base64 | b64   base64 encodes all characters.
         2. url          url-encodes special characters.
         3. url-all      url-encodes all characters.
 
