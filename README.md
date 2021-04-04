@@ -1,6 +1,6 @@
 # RevShell
 
-This script is used for creating one-line reverse shell payloads. 
+Tool used for creating one-line reverse shell payloads.
 * Supports url and base64 encoding
 * Quick and easy way to generate a reverse shell payload
 * User-friendly
