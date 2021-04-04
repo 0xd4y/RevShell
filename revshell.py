@@ -6,7 +6,7 @@
 ## LinkedIn: https://www.linkedin.com/in/segev-eliezer/
 ## Website: https://0xd4y.github.io/
 
-### A script for creating a reverse shell oneliner
+### A script for creating a reverse shell one-liner
 
 import argparse
 from argparse import RawTextHelpFormatter
