@@ -41,7 +41,7 @@ parser = argparse.ArgumentParser(description=f'''{help_subtitle}\n{help_default_
         6. PHP
         7. Powershell | ps
 \n{help_supported_encoding_types}\n
-        1. base64|b64   base64 encodes all characters.
+        1. base64 | b64   base64 encodes all characters.
         2. url          url-encodes special characters.
         3. url-all      url-encodes all characters.
 \nExamples:\n
