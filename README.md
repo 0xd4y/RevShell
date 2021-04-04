@@ -1,6 +1,9 @@
 # RevShell
 
-This script is used for creating one-line reverse shells. 
+This script is used for creating one-line reverse shell payloads. 
+* Supports url and base64 encoding
+* Quick and easy way to generate a reverse shell payload
+* User-friendly
 
 ```
 usage: test.py [-h] [-i] [-p] [-s] [-t] [-e] [-r] [-c]
@@ -36,3 +39,7 @@ Examples:
 python3 revshell.py -i 10.13.3.7 -p 9001 -t nc -e url-all
 python3 revshell.py -p 1337
 ```
+## Examples
+
+![image](https://user-images.githubusercontent.com/77868212/113517220-371e9d00-9544-11eb-8c04-4db69dea636e.png)
+![image](https://user-images.githubusercontent.com/77868212/113517269-806eec80-9544-11eb-8182-5fd4f18acaaa.png)
