@@ -8,9 +8,9 @@ Tool used for creating one-line reverse shell payloads.
 ```
 usage: revshell.py [-h] [-i] [-p] [-s] [-t] [-e] [-c] [-f]
 
-[32m**** Outputs a reverse shell. ****[0m
-[34m
-=== Default values ===[0m
+**** Outputs a reverse shell. ****
+
+=== Default values ===
 
         1. ip = tun0 (otherwise eth0)
         2. port = 443
@@ -27,7 +27,7 @@ optional arguments:
   -c, --clipboard   Copies into clipboard.
   -f, --force       Forces tool to accept argument.
 
-[34m=== Supported reverse shell types ===
+=== Supported reverse shell types ===
 
         1. Ruby
         2. Python and Python3
