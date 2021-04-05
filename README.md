@@ -6,19 +6,28 @@ Tool used for creating one-line reverse shell payloads.
 * User-friendly
 
 ```
-usage: test.py [-h] [-i] [-p] [-s] [-t] [-e] [-r] [-c]
+usage: revshell.py [-h] [-i] [-p] [-s] [-t] [-e] [-c] [-f]
+
+[32m**** Outputs a reverse shell. ****[0m
+[34m
+=== Default values ===[0m
+
+        1. ip = tun0 (otherwise eth0)
+        2. port = 443
+        3. rev_shell type = bash
+        4. shell = /bin/sh
+
 optional arguments:
   -h, --help        show this help message and exit
-  1 #!/usr/bin/env python3
   -i , --ip         Specify the IP address you want to listen on.
   -p , --port       The port you want to listen on.
   -s , --shell      Which shell you want to use (e.g. /bin/bash, /bin/sh, etc.)
   -t , --rev-type   The kind of reverse shell you would like (e.g. perl, python, nc, etc.)
   -e , --encode     Specify encoding for the shell.
-  -r, --raw         Prints out shell without a newline.
   -c, --clipboard   Copies into clipboard.
+  -f, --force       Forces tool to accept argument.
 
-=== Supported reverse shell types ===
+[34m=== Supported reverse shell types ===
 
         1. Ruby
         2. Python and Python3
@@ -38,6 +47,7 @@ Examples:
 
 python3 revshell.py -i 10.13.3.7 -p 9001 -t nc -e url-all
 python3 revshell.py -p 1337
+
 ```
 ## Examples
 
