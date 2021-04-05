@@ -47,7 +47,8 @@ parser = argparse.ArgumentParser(description=f'''{help_subtitle}\n{help_default_
         3. url-all      url-encodes all characters.
 \nExamples:\n
 python3 revshell.py -i 10.13.3.7 -p 9001 -t nc -e url-all
-python3 revshell.py -p 1337''', formatter_class=RawTextHelpFormatter)
+python3 revshell.py -p 1337
+python3 revshell.py -i tun0 -s /bin/bash -t ruby -e base64 -c''', formatter_class=RawTextHelpFormatter)
 
 parser.add_argument('-i', '--ip', type=str, metavar='', help='Specify the IP address you want to listen on.')
 parser.add_argument('-p', '--port', type=str, metavar = '', default="443", help='The port you want to listen on.')
