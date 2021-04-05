@@ -46,7 +46,7 @@ optional arguments:
 Examples:
 
 python3 revshell.py -i 10.13.3.7 -p 9001 -t nc -e url-all
-python3 revshell.py -p 1337
+python3 revshell.py -p 1337 -o reverse_shell.txt
 python3 revshell.py -i tun0 -s /bin/bash -t ruby -e base64 -c
 
 ```
