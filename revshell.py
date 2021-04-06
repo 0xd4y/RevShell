@@ -53,7 +53,7 @@ python3 revshell.py -i tun0 -s /bin/bash -t ruby -e base64 -c''', formatter_clas
 parser.add_argument('-i', '--ip', type=str, metavar='', help='Specify the IP address you want to listen on.')
 parser.add_argument('-p', '--port', type=str, metavar = '', default="443", help='The port you want to listen on.')
 parser.add_argument('-s', '--shell', type=str, metavar = '', default = "/bin/sh", help='Which shell you want to use (e.g. /bin/bash, /bin/sh, etc.)')
-parser.add_argument('-t', '--rev-type', type=str, metavar = '', default = "bash", help='The kind of reverse shell you would like (e.g. perl, python, nc, etc.)')
+parser.add_argument('-t', '--type', type=str, metavar = '', default = "bash", help='The kind of reverse shell you would like (e.g. perl, python, nc, etc.)')
 parser.add_argument('-e', '--encode', type=str, metavar = '', help='Specify encoding for the shell.')
 parser.add_argument('-c', '--clipboard', action = 'store_true', help='Copies into clipboard.\n')
 parser.add_argument('-f', '--force', action = 'store_true', help='Forces tool to accept argument.\n')
@@ -184,7 +184,7 @@ if __name__ == '__main__':
     ip = args.ip
     port = args.port
     shell = args.shell
-    rev_type = args.rev_type
+    rev_type = args.type
     encode = args.encode
     clipboard = args.clipboard
     force = args.force
