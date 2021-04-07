@@ -24,10 +24,10 @@ import pyperclip
 import sys
 
 # Coloring the help
-help_supported_shell_types = colored('=== Supported reverse shell types ===','blue')
-help_supported_encoding_types = colored('=== Supported encoding types ===','blue')
-help_default_values = colored('\n=== Default values ===','blue')
-help_subtitle = colored('**** Outputs a reverse shell payload. ****','green')
+help_supported_shell_types = colored('=== Supported reverse shell types ===','red')
+help_supported_encoding_types = colored('=== Supported encoding types ===','red')
+help_default_values = colored('\n=== Default values ===','red')
+help_subtitle = colored('**** Outputs a reverse shell payload ****','green')
 
 parser = argparse.ArgumentParser(description=f'''{help_subtitle}\n{help_default_values}\n
         1. ip = tun0 (otherwise eth0)
