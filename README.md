@@ -8,7 +8,7 @@ Tool used for creating one-line reverse shell payloads.
 ```
 usage: revshell.py [-h] [-i] [-p] [-s] [-t] [-e] [-c] [-f]
 
-**** Outputs a reverse shell. ****
+**** Outputs a reverse shell payload ****
 
 === Default values ===
 
@@ -19,13 +19,14 @@ usage: revshell.py [-h] [-i] [-p] [-s] [-t] [-e] [-c] [-f]
 
 optional arguments:
   -h, --help        show this help message and exit
-  -i , --ip         Specify the IP address you want to listen on.
-  -p , --port       The port you want to listen on.
+  -i , --ip         Specify the IP address you want to listen on
+  -p , --port       The port you want to listen on
   -s , --shell      Which shell you want to use (e.g. /bin/bash, /bin/sh, etc.)
   -t , --rev-type   The kind of reverse shell you would like (e.g. perl, python, nc, etc.)
-  -e , --encode     Specify encoding for the shell.
-  -c, --clipboard   Copies into clipboard.
-  -f, --force       Forces tool to accept argument.
+  -e , --encode     Specify encoding for the shell
+  -c, --clipboard   Copies into clipboard
+  -f, --force       Forces tool to accept argument
+  -o, --outfile     File to output payload
 
 === Supported reverse shell types ===
 
@@ -40,8 +41,8 @@ optional arguments:
 === Supported encoding types ===
 
         1. base64 | b64   base64 encodes all characters.
-        2. url          url-encodes special characters.
-        3. url-all      url-encodes all characters.
+        2. url            url encodes special characters.
+        3. url-all        url encodes all characters.
 
 Examples:
 
