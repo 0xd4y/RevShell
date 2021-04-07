@@ -17,7 +17,7 @@ import urllib.parse
 import base64
 
 import netifaces as ni
-import socket
+import re
 
 import pyperclip
 
@@ -50,14 +50,14 @@ python3 revshell.py -i 10.13.3.7 -p 9001 -t nc -e url-all
 python3 revshell.py -p 1337 -o reverse_shell.txt
 python3 revshell.py -i tun0 -s /bin/bash -t ruby -e base64 -c''', formatter_class=RawTextHelpFormatter)
 
-parser.add_argument('-i', '--ip', type=str, metavar='', help='Specify the IP address you want to listen on.')
+parser.add_argument('-i', '--ip', type=str, metavar='', default="tun0", help='Specify the IP address you want to listen on.')
 parser.add_argument('-p', '--port', type=str, metavar = '', default="443", help='The port you want to listen on.')
 parser.add_argument('-s', '--shell', type=str, metavar = '', default = "/bin/sh", help='Which shell you want to use (e.g. /bin/bash, /bin/sh, etc.)')
 parser.add_argument('-t', '--type', type=str, metavar = '', default = "bash", help='The kind of reverse shell you would like (e.g. perl, python, nc, etc.)')
 parser.add_argument('-e', '--encode', type=str, metavar = '', help='Specify encoding for the shell.')
 parser.add_argument('-c', '--clipboard', action = 'store_true', help='Copies into clipboard.\n')
 parser.add_argument('-f', '--force', action = 'store_true', help='Forces tool to accept argument.\n')
-parser.add_argument('-o', type=str, metavar = '', help='File to output shell.')
+parser.add_argument('-o', '--outfile', type=str, metavar = '', help='File to output shell.')
 
 args = parser.parse_args()
 
@@ -91,17 +91,18 @@ class shells():
         global shell
         global port
         global ip
+       
+        valid_ip = re.compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")
+        if re.match(valid_ip, ip):
+            pass
         
-        # Series of try and except to test for presence of an interface (for some reason this does not test for valid ip)
-        try:
-            socket.inet_aton(ip)
-        except:
-            ip = str(ip)
-            try:
+        # If user entered interface or invalid ip
+        else:
 
-                # Converts localhost to lo
-                if ip.lower() == 'localhost':
-                    ip = 'lo'
+            # Converts localhost to lo
+            if ip.lower() == 'localhost':
+                ip = 'lo'
+            try:
                 ip = ni.ifaddresses(ip)[ni.AF_INET][0]['addr']
 
             # If specified interface not found
@@ -109,22 +110,19 @@ class shells():
                 
                 if not force:
 
-                    # Special message for tun0 as this tool will be used a lot in VPNs
-                    if(ip.lower() == "tun0"):
-                        cprint("tun0 was not found! Defaulting to eth0. Use --force to override.\n","red")
-                        ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
-                    else:
-                        cprint("Specified interface was not found, ip is invalid, or no ip specified. Defaulting to eth0. Use --force to override.\n","red")
-                        try:
-                            ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
-                    
+                    try:
+                        iptemp = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
+                        if ip.lower()=="tun0":
+                            # Special message for tun0 as this tool will be used a lot for CTFs
+                            cprint("tun0 was not found! Defaulting to eth0. Use --force to override.\n","red")
+                        else:
+                            cprint("Specified interface was not found or ip is invalid. Defaulting to eth0. Use --force to override.\n","red")
+                        ip = iptemp
+                    # If for some reason there is still an exception
+                    except Exception as e:
+                        sys.exit("Please specify a valid ip address or interface.")
             
-                        # If for some reason there is still an exception
-                        except Exception as e:
-                            sys.exit("Please specify an ip address or interface.")
-            
-        # Coloring messes up shell when copying or encoding
-        # Couldn't find a way to make it work with encoding
+        # Coloring messes up payload when copying or encoding
         if not encode and not clipboard and not outfile:
             colorama.init()
             shell = colored(shell, 'red')
@@ -188,7 +186,7 @@ if __name__ == '__main__':
     encode = args.encode
     clipboard = args.clipboard
     force = args.force
-    outfile = args.o
+    outfile = args.outfile
     arguments = shells(ip,port,rev_type,encode,force,outfile)
 
 if len(sys.argv) > 1:
